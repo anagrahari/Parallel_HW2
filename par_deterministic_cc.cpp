@@ -1,7 +1,3 @@
-#include<algorithm>
-#include<iostream>
-#include<sys/time.h>
-#include<cilk/cilk.h>
 #include "par_cc_common.h"
 
 int optimized_roots = 0;
@@ -99,12 +95,27 @@ vector<int> par_deterministic_cc(int n, vector<Edge> &e, vector<int> L, int m) {
 int main(int argc, char *args[]) {
 	struct timeval start, end;
 
+	if (argc < 3) { 
+		cout << "Usage: " << "./par_randomized_cc <optimized_roots{0|1}> <cilk_view{0|1}>  < input file\n";
+		return 0;
+	}
+
 	optimized_roots = atoi(args[1]);
+	cilk_view = atoi(args[2]);
 
 	if (optimized_roots == 1)
 		cout << "Running with optimized_find_roots..";
 
 	initialize();
+
+	if (cilk_view == 1) {
+		cout << "Running cilk_view code\n";
+		cilkview_data_t d;
+		__cilkview_query(d);
+		L = par_deterministic_cc(N, E, L, M);
+		__cilkview_report(&d, NULL, "par_deterministic_cc", CV_REPORT_WRITE_TO_RESULTS);
+		return 0;
+	}
 
 	gettimeofday(&start, NULL); //Start timing of computation
 	L = par_deterministic_cc(N, E, L, M);

@@ -1,7 +1,3 @@
-#include<algorithm>
-#include<iostream>
-#include<sys/time.h>
-#include<cilk/cilk.h>
 #include "par_cc_common.h"
 
 typedef enum coinflip {
@@ -57,17 +53,32 @@ vector<int> par_randomized_cc(int n, vector<Edge> &E, vector<int> &L, int m){
 	return M;
 }
 
-int main() {
+int main(int argc, char *args[]) {
 	struct timeval start,end;
 
-	initialize();
+	if (argc  < 2) { 
+		cout << "Usage: " << "./par_randomized_cc <cilk_view{0|1}>  < input file\n";
+		return 0;
+	}
 
+	cilk_view = atoi(args[1]);
+
+	initialize();
+	
+	if (cilk_view == 1) {
+		cout << "Running cilk_view code\n";
+		cilkview_data_t d;
+		__cilkview_query(d);
+		L = par_randomized_cc(N, E, L, M);
+		__cilkview_report(&d, NULL, "par_randomized_cc", CV_REPORT_WRITE_TO_RESULTS);
+		return 0;
+	}
+ 
 	gettimeofday(&start,NULL); //Start timing of computation
 	L = par_randomized_cc(N, E, L, M);
 	gettimeofday(&end,NULL); //Stop timing of computation
 	double time = (end.tv_sec+(double)end.tv_usec/1000000) -
 			 (start.tv_sec+(double)start.tv_usec/1000000);
 	cout << "Time taken by algorithm: " << time << " seconds.\n";
-
 	dump_output(L, N);
 }

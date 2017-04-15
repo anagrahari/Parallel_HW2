@@ -1,4 +1,10 @@
 #include<vector>
+#include<algorithm>
+#include<iostream>
+#include<sys/time.h>
+#include<cilk/cilk.h>
+#include<cilktools/cilkview.h>
+ 
 using namespace std;
 
 typedef struct e {
@@ -6,11 +12,11 @@ typedef struct e {
 	int v;
 } Edge;
 
-int N;
-int M;
+int N = -1;
+int M = -1;
+int cilk_view = 0;
 vector<Edge> E;
 vector<int> L;
-
 
 void initialize() {
 	cin >> N;
