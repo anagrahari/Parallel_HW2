@@ -56,7 +56,7 @@ vector<int> par_randomized_cc(int n, vector<Edge> &E, vector<int> &L, int m){
 int main(int argc, char *args[]) {
 	struct timeval start,end;
 
-	if (argc  < 2) { 
+	if (argc < 2) { 
 		cout << "Usage: " << "./par_randomized_cc <cilk_view{0|1}>  < input file\n";
 		return 0;
 	}
