@@ -1,0 +1,1 @@
+./par_randomized_cc.sh: line 1: 93296 Killed                  ./par_randomized_cc 0 < $1 > $2

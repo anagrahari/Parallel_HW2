@@ -1,0 +1,4 @@
+./par_deterministic_cc.sh: line 1: 23750 Killed                  ./par_deterministic_cc 0 0 < $1 > $2
+./par_deterministic_cc.sh: line 1: 23882 Killed                  ./par_deterministic_cc 0 0 < $1 > $2
+./par_deterministic_cc.sh: line 1: 23916 Killed                  ./par_deterministic_cc 0 0 < $1 > $2
+./par_deterministic_cc.sh: line 1: 24049 Killed                  ./par_deterministic_cc 0 0 < $1 > $2
