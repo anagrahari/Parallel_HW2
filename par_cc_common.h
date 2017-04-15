@@ -1,11 +1,46 @@
 #include<vector>
-int n;
-int m;
 using namespace std;
+
 typedef struct e {
 	int u;
 	int v;
 } Edge;
+
+int n;
+int m;
+vector<Edge> E;
+vector<int> L;
+
+void initialize() {
+	cin >> n;
+	cin >> m;
+	E.resize(m+1);
+	for (int i = 1; i <= m; i++) {
+		cin >> E[i].u;
+		cin >> E[i].v;
+	}
+	L.resize(n+1);
+	cilk_for (int v = 1; v <= n; v++) {
+		L[v] = v;
+	}
+}
+
+void dump_output(vector<int> &L, int n) {
+	int count = 0;
+	vector<int> output(n+1);
+	for (int i = 1; i <= n; i++){
+		output[i]=0;
+	}
+	for (int i = 1; i <= n; i++){
+		if(output[L[i]]==0) count++;
+		output[L[i]]++;
+	}
+	std::sort(output.begin(), output.end(), std::greater<int>());
+	cout << count << "\n";
+	for (int i = 1; i <= n; i++){
+		if(output[i]!=0) cout << output[i] << "\n";
+	}
+}
 
 vector<int> par_prefix_sum(vector<int> &input, int n) {
 	vector<int> S(n+1);
