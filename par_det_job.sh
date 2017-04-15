@@ -2,7 +2,7 @@
 #SBATCH -J par_det_jobs           # job name
 #SBATCH -o par_det_jobs.o%j       # output and error file name (%j expands to jobID)
 #SBATCH -n 1               # total number of mpi tasks requested
-#SBATCH -p dev     	   # queue (partition) -- normal, development, etc.
+#SBATCH -p development    	   # queue (partition) -- normal, development, etc.
 #SBATCH -t 02:00:00        # run time (hh:mm:ss) - 2 hours
 #SBATCH --mail-user=muksharma@cs.stonybrook.edu
 #SBATCH --mail-type=begin  # email me when the job starts
