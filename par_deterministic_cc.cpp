@@ -33,7 +33,7 @@ void optimized_find_roots(int n, vector<int> &P, vector<int> &S) {
 }
 
 
-vector<int> par_deterministic_cc(int n, vector<Edge> &e, vector<int> L, int m) {
+vector<int> par_deterministic_cc(int n, vector<Edge> &E, vector<int> L, int m) {
 	if (m == 0) 
 		return L;
 	vector<int> L2H(n+1);
@@ -89,6 +89,10 @@ vector<int> par_deterministic_cc(int n, vector<Edge> &e, vector<int> L, int m) {
 
 	L = par_deterministic_cc(n, F, L, S[m]);
 
+	vector<Edge>().swap(F);
+	vector<int>().swap(S);
+	vector<int>().swap(L2H);
+	vector<int>().swap(H2L);
 	return L;
 }
 
@@ -112,17 +116,19 @@ int main(int argc, char *args[]) {
 		cout << "Running cilk_view code\n";
 		cilkview_data_t d;
 		__cilkview_query(d);
-		L = par_deterministic_cc(N, E, L, M);
+		LABELS = par_deterministic_cc(N, EDGES, LABELS, M);
 		__cilkview_report(&d, NULL, "par_deterministic_cc", CV_REPORT_WRITE_TO_RESULTS);
+		cleanup();
 		return 0;
 	}
 
 	gettimeofday(&start, NULL); //Start timing of computation
-	L = par_deterministic_cc(N, E, L, M);
+	LABELS = par_deterministic_cc(N, EDGES, LABELS, M);
 	gettimeofday(&end, NULL); //Stop timing of computation
 	double time = (end.tv_sec+(double)end.tv_usec/1000000) -
 			 (start.tv_sec+(double)start.tv_usec/1000000);
 	cout << "Time taken by algorithm: " << time << " seconds.\n";
-	dump_output(L, N);
+	dump_output(LABELS, N);
+	cleanup();
 }
 

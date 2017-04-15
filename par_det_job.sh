@@ -7,6 +7,7 @@
 #SBATCH --mail-user=muksharma@cs.stonybrook.edu
 #SBATCH --mail-type=begin  # email me when the job starts
 #SBATCH --mail-type=end    # email me when the job finishes
+rm -rf deterministic_output/*
 ./par_deterministic_cc.sh input/as-skitter-in.txt deterministic_output/as-skitter
 ./par_deterministic_cc.sh input/ca-AstroPh-in.txt deterministic_output/ca-AstroPh
 ./par_deterministic_cc.sh input/com-amazon-in.txt deterministic_output/com-amazon

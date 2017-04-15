@@ -42,6 +42,11 @@ vector<int> par_randomized_cc(int n, vector<Edge> &E, vector<int> &L, int m){
 	}
 
 	M = par_randomized_cc(n, F, L, S[m]);
+
+	vector<Edge>().swap(F);
+	vector<int>().swap(S);
+	vector<flip>().swap(C);
+
 	cilk_for (int i = 1; i <= m; i++) {
 		if (E[i].v == L[E[i].u]) {
 			M[E[i].u] = M[E[i].v];
@@ -55,7 +60,7 @@ vector<int> par_randomized_cc(int n, vector<Edge> &E, vector<int> &L, int m){
 
 int main(int argc, char *args[]) {
 	struct timeval start,end;
-
+	vector<int> LOUT;
 	if (argc < 2) { 
 		cout << "Usage: " << "./par_randomized_cc <cilk_view{0|1}>  < input file\n";
 		return 0;
@@ -69,16 +74,20 @@ int main(int argc, char *args[]) {
 		cout << "Running cilk_view code\n";
 		cilkview_data_t d;
 		__cilkview_query(d);
-		L = par_randomized_cc(N, E, L, M);
+		LOUT = par_randomized_cc(N, EDGES, LABELS, M);
 		__cilkview_report(&d, NULL, "par_randomized_cc", CV_REPORT_WRITE_TO_RESULTS);
+		vector<int>().swap(LOUT);
+		cleanup();
 		return 0;
 	}
  
 	gettimeofday(&start,NULL); //Start timing of computation
-	L = par_randomized_cc(N, E, L, M);
+	LOUT = par_randomized_cc(N, EDGES, LABELS, M);
 	gettimeofday(&end,NULL); //Stop timing of computation
 	double time = (end.tv_sec+(double)end.tv_usec/1000000) -
 			 (start.tv_sec+(double)start.tv_usec/1000000);
 	cout << "Time taken by algorithm: " << time << " seconds.\n";
-	dump_output(L, N);
+	dump_output(LOUT, N);
+	vector<int>().swap(LOUT);
+	cleanup();
 }

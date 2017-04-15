@@ -15,25 +15,29 @@ typedef struct e {
 int N = -1;
 int M = -1;
 int cilk_view = 0;
-vector<Edge> E;
-vector<int> L;
+vector<Edge> EDGES;
+vector<int> LABELS;
 
 void initialize() {
 	cin >> N;
 	cin >> M;
 
-	E.resize(M+1);
+	EDGES.resize(M+1);
 	for (int i = 1; i <= M; i++) {
-		cin >> E[i].u;
-		cin >> E[i].v;
+		cin >> EDGES[i].u;
+		cin >> EDGES[i].v;
 	}
 
-	L.resize(N+1);
+	LABELS.resize(N+1);
 	cilk_for (int v = 1; v <= N; v++) {
-		L[v] = v;
+		LABELS[v] = v;
 	}
 }
 
+void cleanup() {
+	vector<Edge>().swap(EDGES);
+	vector<int>().swap(LABELS);
+}
 
 void dump_output(vector<int> &L, int n) {
 	int count = 0;
@@ -57,6 +61,7 @@ void dump_output(vector<int> &L, int n) {
 		if(output[i]!=0) 
 			cout << output[i] << "\n";
 	}
+	vector<int>().swap(output);
 }
 
 
@@ -74,7 +79,7 @@ vector<int> par_prefix_sum(vector<int> &input) {
 
 		vector<int> Z(n/2 + 1);
 		Z = par_prefix_sum(Y);
-
+		vector<int>().swap(Y);
 		cilk_for (int i = 1; i <= n; i++ ) {
 			if (i == 1) 
 				S[1] = input[1];
@@ -83,6 +88,7 @@ vector<int> par_prefix_sum(vector<int> &input) {
 			else 
 				S[i] = Z[(i-1)/2] + input[i];
 		}
+		vector<int>().swap(Z);
 	}
 	return S;
 }
@@ -101,6 +107,7 @@ int par_sum(vector<int> &X, int n) {
 
 		vector<int> Z(n/2 + 1);
 		Z = par_prefix_sum(Y);
+		vector<int>().swap(Y);
 		cilk_for (int i = 1; i <= n; i++ ) {
 			if (i == 1)
 				 S[1] = X[1];
@@ -109,6 +116,10 @@ int par_sum(vector<int> &X, int n) {
 			else 
 				S[i] = Z[(i-1)/2] + X[i];
 		}
+		vector<int>().swap(Z);
 	}
-	return S[n];
+
+	int value = S[n];
+	vector<int>().swap(S);
+	return value;
 }

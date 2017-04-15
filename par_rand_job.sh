@@ -7,6 +7,7 @@
 #SBATCH --mail-user=muksharma@cs.stonybrook.edu
 #SBATCH --mail-type=begin  # email me when the job starts
 #SBATCH --mail-type=end    # email me when the job finishes
+rm -rf rand_output/*
 ./par_randomized_cc.sh input/as-skitter-in.txt rand_output/as-skitter
 ./par_randomized_cc.sh input/ca-AstroPh-in.txt rand_output/ca-AstroPh
 ./par_randomized_cc.sh input/com-amazon-in.txt rand_output/com-amazon
