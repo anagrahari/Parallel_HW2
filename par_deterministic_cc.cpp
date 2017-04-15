@@ -4,6 +4,8 @@
 #include<cilk/cilk.h>
 #include "par_cc_common.h"
 
+int optimized_roots = 0;
+
 void find_roots(int n, vector<int> &P, vector<int> &S) {
 	bool flag = true;
  
@@ -19,6 +21,7 @@ void find_roots(int n, vector<int> &P, vector<int> &S) {
 				flag = true;
 		}
 	}
+
 	return;
 }
 
@@ -29,32 +32,8 @@ void optimized_find_roots(int n, vector<int> &P, vector<int> &S) {
 			S[v] = S[S[v]];
 		}
 	}
+
 	return;
-}
-
-int par_sum(vector<int> &X, int n) {
-	vector<int> S(n+1);
-
-	if (n == 1) {
-		S[1] = X[1];
-	} else {
-		vector<int> Y(n/2 + 1);
-		cilk_for (int i = 1; i <= n/2; i++) {
-			Y[i] = X[2*i-1] + X[2*i];
-		}
-
-		vector<int> Z(n/2 + 1);
-		Z = par_prefix_sum(Y, n/2);
-		cilk_for (int i = 1; i <= n; i++ ) {
-			if (i == 1)
-				 S[1] = X[1];
-			else if (i % 2 == 0)
-				 S[i] = Z[i/2];
-			else 
-				S[i] = Z[(i-1)/2] + X[i];
-		}
-	}
-	return S[n];
 }
 
 
@@ -93,14 +72,17 @@ vector<int> par_deterministic_cc(int n, vector<Edge> &e, vector<int> L, int m) {
 				L[E[i].v] = E[i].u;
 		}
 	}
-
-	find_roots(n,L,L);
+	
+	if (optimized_roots == 0)
+		find_roots(n,L,L);
+	else
+		optimized_find_roots(n,L,L);
 
 	cilk_for (int i = 1; i <= m; i++) {
 		S[i] = (L[E[i].u] != L[E[i].v]) ? 1 : 0;
 	}
 
-	S = par_prefix_sum(S, m);
+	S = par_prefix_sum(S);
 	vector<Edge> F(S[m]+1);
 	cilk_for (int i =1; i <= m; i++) {
 		if (L[E[i].u] != L[E[i].v]) {
@@ -108,20 +90,28 @@ vector<int> par_deterministic_cc(int n, vector<Edge> &e, vector<int> L, int m) {
 			F[S[i]].v = L[E[i].v];
 		}
 	}
+
 	L = par_deterministic_cc(n, F, L, S[m]);
+
 	return L;
 }
 
-int main() {
-	struct timeval start,end;
-	
+int main(int argc, char *args[]) {
+	struct timeval start, end;
+
+	optimized_roots = atoi(args[1]);
+
+	if (optimized_roots == 1)
+		cout << "Running with optimized_find_roots..";
+
 	initialize();
-	gettimeofday(&start, NULL); //Start timing the computation
+
+	gettimeofday(&start, NULL); //Start timing of computation
 	L = par_deterministic_cc(N, E, L, M);
-	gettimeofday(&end, NULL); //Stop timing the computation
-	double myTime = (end.tv_sec+(double)end.tv_usec/1000000) -
+	gettimeofday(&end, NULL); //Stop timing of computation
+	double time = (end.tv_sec+(double)end.tv_usec/1000000) -
 			 (start.tv_sec+(double)start.tv_usec/1000000);
-	cout << "Time taken by algorithm: " << myTime << " seconds.\n";
+	cout << "Time taken by algorithm: " << time << " seconds.\n";
 	dump_output(L, N);
 }
 
