@@ -7,9 +7,12 @@
 #SBATCH --mail-type=begin  # email me when the job starts
 #SBATCH --mail-type=end    # email me when the job finishes
 p=16
+rm -f  deterministic_time
+touch deterministic_time
 while [ $p -gt 0 ]
 do
 	export CILK_NWORKERS=$p
-	./par_deterministic_cc 0 1 < input/com-lj-in.txt
+	echo $CILK_NWORKERS >> deterministic_time
+	./par_deterministic_cc 0 0 < input/com-lj-in.txt >> deterministic_time
 	p=`expr $p - 1`
 done
